@@ -28,7 +28,7 @@ public class BookingService {
     private final BookingRepository repository;
     private final UserRepository userRepository;
     private final DiscountRepository discountRepository;
-    @Value("${work.stattime.hour}")
+    @Value("${work.starttime.hour}")
     private int startHour;
     @Value("${work.endtime.hour}")
     private int endHour;
