@@ -1,5 +1,10 @@
 package com.voshodnerd.BeatySalon.payload;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ApiResponse {
     private Boolean success;
     private String message;
@@ -15,19 +20,5 @@ public class ApiResponse {
         this.body=body;
     }
 
-    public Boolean getSuccess() {
-        return success;
-    }
 
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

@@ -4,6 +4,7 @@ import com.voshodnerd.BeatySalon.model.ServiceItem;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import org.joda.time.DateTime;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
@@ -20,8 +21,9 @@ public class BookingDTO {
     @NotNull
     UserDTO user;
     @NotNull
-    Set<ServiceItem> serviceList;
+    Set<ServiceItem> serviceList=new HashSet<>();
+    @NotNull
     Date date;
-    Long sum;
-    Long totalSum;
+    Integer sum;
+    Integer totalSum;
 }

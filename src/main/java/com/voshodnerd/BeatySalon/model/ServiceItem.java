@@ -1,5 +1,6 @@
 package com.voshodnerd.BeatySalon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,10 +15,12 @@ public class ServiceItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    Long price;
-    Long durationInMinute;
+    Integer price;
+    Integer durationInMinute;
+    String category;
     Boolean active;
     @ManyToMany
+    @JsonIgnore
     Set<ConsumeMaterial> materialList;
 
 }

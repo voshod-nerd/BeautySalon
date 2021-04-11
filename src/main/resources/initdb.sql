@@ -5,5 +5,8 @@ insert into users (id,name,username,email,password,active,role) values (4,'Ни�
 insert into service_item (duration_in_minute,name,price,active) values (45,'Депиляция',800,true);
 insert into service_item (duration_in_minute,name,price,active) values (60,'Стрижка женская',1500,true);
 insert into service_item (duration_in_minute,name,price,active) values (45,'Манюкур',800,true);
+insert into discount (start_date,end_date,type,name,value) values ('2021-01-01','2021-12-31','PROMOCOD','BRONZE',3);
+insert into discount (start_date,end_date,type,name,value) values ('2021-01-01','2021-12-31','PROMOCOD','SILVER',5);
+insert into discount (start_date,end_date,type,name,value) values ('2021-01-01','2021-12-31','PROMOCOD','GOLD',7);
 
 
