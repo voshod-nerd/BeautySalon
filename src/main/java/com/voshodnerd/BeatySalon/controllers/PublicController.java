@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/public")
 @RequiredArgsConstructor
-@Tag(name="Публичный контроллер", description="В нем расположены общедоступные методы которые не требуют авторизации")
+@Tag(name = "Публичный контроллер", description = "В нем расположены общедоступные методы которые не требуют авторизации")
 public class PublicController {
 
     private final UserRepository userRepository;
@@ -54,14 +54,22 @@ public class PublicController {
     }
 
     @GetMapping("/service/all")
+    @Operation(
+            summary = "Список всех услуг салона",
+            description = "Получение всех услуг салон"
+    )
     public List<ServiceItem> getAllServiceList() {
         return manageService.getAllActiveService();
     }
 
 
     @GetMapping("/discounts")
+    @Operation(
+            summary = "Список всех не персональных сикдов",
+            description = "Список всех не перснональных скидок"
+    )
     public List<Discount> getAllNonPersonalDiscount() {
-        return  discountRepository.findByType(TypeDiscount.PROMOCOD);
+        return discountRepository.findByType(TypeDiscount.PROMOCOD);
     }
 
 

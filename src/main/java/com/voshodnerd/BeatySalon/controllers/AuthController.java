@@ -8,6 +8,8 @@ import com.voshodnerd.BeatySalon.payload.JwtAuthenticationResponse;
 import com.voshodnerd.BeatySalon.payload.LoginRequest;
 import com.voshodnerd.BeatySalon.payload.SignUpRequest;
 import com.voshodnerd.BeatySalon.security.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ import java.util.Collections;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "Контроллер авторизации и регистрации", description = "Позволяет создать пользователя и его авторизовать")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -36,6 +39,10 @@ public class AuthController {
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/signin")
+    @Operation(
+            summary = "Аутентификация пользователя",
+            description = "Аутентификация пользователя. В ответ получаем JWT-токен"
+    )
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -50,6 +57,10 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
+    @Operation(
+            summary = "Регистрация пользователя",
+            description = "Регистрация пользтвателя"
+    )
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return new ResponseEntity(new ApiResponse(false, "Username is already taken!"),
