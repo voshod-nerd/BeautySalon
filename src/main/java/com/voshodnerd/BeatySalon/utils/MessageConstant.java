@@ -12,6 +12,9 @@ public abstract class MessageConstant {
     public static final String BOOKING_IS_SUCCESSFUL = "Бронирование успешно создано";
     public static final String MATERIAL_ALREADY_EXIST = "Материал с данных имененм уже сущесвует";
     public static final String MATERIAL_SUCCESSFUL_CREATED = "Материал успешно создан";
+    public static final String MATERIAL_NOT_FOUND = "Материал не найдет";
+    public static final String MATERIAL_LESS_ZERO = "Невозможно уменьшить количество менье 0";
+    public static final String MATERIAL_COUNT_SUCCESSFUL_CHANGED = "Количество успешно изменено";
 
 
 }

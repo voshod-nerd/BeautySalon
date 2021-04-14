@@ -47,7 +47,7 @@ public class PublicController {
         return result;
     }
 
-    @PostMapping("/booking_list/{masterId}")
+    @GetMapping("/booking_list/{masterId}")
     public ResponseEntity<?> listBookingByMaster(@PathVariable Long masterId) {
         List<BookingDTO> lst = bookingService.getBookingByMasterId(masterId);
         return new ResponseEntity<List<BookingDTO>>(lst, HttpStatus.OK);
@@ -66,7 +66,7 @@ public class PublicController {
     @GetMapping("/discounts")
     @Operation(
             summary = "Список всех не персональных сикдов",
-            description = "Список всех не перснональных скидок"
+            description = "Список всех не персональных скидок"
     )
     public List<Discount> getAllNonPersonalDiscount() {
         return discountRepository.findByType(TypeDiscount.PROMOCOD);
