@@ -27,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,8 +54,15 @@ public class AuthController {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        Optional<Users> optional = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail());
+        JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
+        if (optional.isPresent()) {
+            response.setRole(optional.get().getRole().name());
+            response.setUsername(optional.get().getUsername());
+        }
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping("/signup")
     @Operation(
