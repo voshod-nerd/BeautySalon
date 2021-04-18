@@ -1,11 +1,7 @@
 package com.voshodnerd.BeatySalon.service;
 
-import com.voshodnerd.BeatySalon.jpa.BookingRepository;
-import com.voshodnerd.BeatySalon.jpa.DiscountRepository;
-import com.voshodnerd.BeatySalon.jpa.UserRepository;
-import com.voshodnerd.BeatySalon.model.Booking;
-import com.voshodnerd.BeatySalon.model.Discount;
-import com.voshodnerd.BeatySalon.model.StatusBooking;
+import com.voshodnerd.BeatySalon.jpa.*;
+import com.voshodnerd.BeatySalon.model.*;
 import com.voshodnerd.BeatySalon.model.authentication.Users;
 import com.voshodnerd.BeatySalon.model.dto.BookingDTO;
 import com.voshodnerd.BeatySalon.model.dto.MasterDTO;
@@ -17,10 +13,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +21,15 @@ public class BookingService {
     private final BookingRepository repository;
     private final UserRepository userRepository;
     private final DiscountRepository discountRepository;
+    private final CashierRepository cashierRepository;
+    private final TransactionRepository transactionRepository;
     @Value("${work.starttime.hour}")
     private int startHour;
     @Value("${work.endtime.hour}")
     private int endHour;
+
+    @Value("${uuid.cashier}")
+    private String cashier;
 
     public BookingDTO toBookingDTO(Booking booking) {
         BookingDTO bookingDTO = new BookingDTO();
@@ -53,7 +51,7 @@ public class BookingService {
         booking.setUsers(optionalUsers.get());
         booking.setStatus(StatusBooking.NEW);
         booking.getServiceList().addAll(booking.getServiceList());
-        int sumAllServices = bookingDTO.getServiceList().stream().mapToInt(x -> x.getPrice()).sum();
+        float sumAllServices = bookingDTO.getServiceList().stream().mapToInt(x -> x.getPrice()).sum();
         booking.setSum(sumAllServices);
         // применение скидки
         Optional<List<Discount>> optionalDiscounts = discountRepository.findByPeriodAndUser(bookingDTO.getDate(), optionalUsers.get().getId());
@@ -94,9 +92,8 @@ public class BookingService {
         return bookingDTO;
     }
 
-
     public ApiResponse bookingValidation(BookingDTO bookingDTO) {
-        DateTime bookingTime= new DateTime(bookingDTO.getDate());
+        DateTime bookingTime = new DateTime(bookingDTO.getDate());
         DateTime start = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth(), 0, 0);
         DateTime end = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth() + 1, 0, 0);
         Optional<Users> optionalMaster = userRepository.findById(bookingDTO.getMaster().getId());
@@ -131,4 +128,43 @@ public class BookingService {
         return new ApiResponse(true, MessageConstant.BOOKING_IS_PERMITTED, createBooking(bookingDTO));
 
     }
+
+    public ApiResponse executeBooking(BookingDTO bookingDTO) {
+        Optional<Booking> optional = repository.findById(bookingDTO.getId());
+        if (!optional.isPresent()) return new ApiResponse(false, MessageConstant.BOOKING_NOT_FOUND);
+        Booking booking = optional.get();
+        booking.setStatus(StatusBooking.DONE);
+        bookingDTO.setStatusBooking(StatusBooking.DONE);
+        try {
+            setDiscount(booking, bookingDTO);
+        } catch (IllegalArgumentException e) {
+            return new ApiResponse(false, MessageConstant.PROMOCODE_NOT_FOUND);
+        }
+        TransactionElement transaction = new TransactionElement();
+        transaction.setSum(booking.getTotalSum());
+        transaction.setOperation(OperationType.INCOME);
+        transaction.setTime(new Date());
+        transaction.setDescription(MessageConstant.INCOME_BY_CLOSE_BOOKING);
+        Optional<Cashier> optionalCashier = cashierRepository.findById(UUID.fromString(cashier));
+        if (!optionalCashier.isPresent()) return new ApiResponse(false, MessageConstant.NOT_FOUND_CASHIER);
+        Cashier cashier = optionalCashier.get();
+        transaction = transactionRepository.save(transaction);
+        cashier.setTotalSum(cashier.getTotalSum() + transaction.getSum());
+        cashierRepository.save(cashier);
+        repository.save(booking);
+        return new ApiResponse(true, MessageConstant.BOOKING_IS_EXECUTED, bookingDTO);
+    }
+
+    private void setDiscount(Booking booking, BookingDTO bookingDTO) {
+        if (bookingDTO.getPromoCode() == null) return;
+        List<Discount> discounts = discountRepository.findByType(TypeDiscount.valueOf(bookingDTO.getPromoCode()));
+        if (discounts == null) return;
+        Discount discount = discounts.get(0);
+        float totalsum = booking.getTotalSum();
+        totalsum = totalsum - totalsum / 100 * discount.getValue();
+        bookingDTO.setTotalSum(totalsum);
+        booking.setTotalSum(totalsum);
+    }
+
+
 }

@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Контроллер услуг салона", description = "Методы по работе с услугами")
 public class ServiceController {
     private final ManageService manageService;
-    private  ModelMapper modelMapper;
+    private ModelMapper modelMapper;
 
     @Autowired
     public ServiceController(ManageService manageService) {
@@ -90,6 +90,7 @@ public class ServiceController {
         //This custom converter replaces the one automatically created by ModelMapper,
         //So we have to map each of the contact fields as well.
         context.getDestination().setIdMaterial(context.getSource().getMaterial().getId());
+        context.getDestination().setName(context.getSource().getMaterial().getName());
         context.getDestination().setQuantity(context.getSource().getQuantity());
         return context.getDestination();
     };
@@ -104,7 +105,7 @@ public class ServiceController {
         context.getDestination().setName(context.getSource().getName());
         context.getDestination().setPrice(context.getSource().getPrice());
         for (ConsumeMaterial material : context.getSource().getMaterialList()) {
-            context.getDestination().getMaterialList().add(new ConsumeMaterialDTO(material.getMaterial().getId(), material.getQuantity().intValue()));
+            context.getDestination().getMaterialList().add(new ConsumeMaterialDTO(material.getMaterial().getId(), material.getMaterial().getName(), material.getQuantity().intValue()));
         }
         return context.getDestination();
     };

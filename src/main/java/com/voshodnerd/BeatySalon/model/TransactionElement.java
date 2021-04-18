@@ -12,10 +12,11 @@ import java.util.Date;
 @Setter
 public class TransactionElement {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Enumerated(EnumType.STRING)
     OperationType operation;
-    Long sum;
+    Float sum;
     Date time;
     String description;
 }

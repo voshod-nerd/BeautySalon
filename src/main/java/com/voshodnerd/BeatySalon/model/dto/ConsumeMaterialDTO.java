@@ -8,5 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ConsumeMaterialDTO {
     Long idMaterial;
+    String name;
     Integer quantity;
 }

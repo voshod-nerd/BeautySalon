@@ -61,12 +61,23 @@ public class BookingController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(
             summary = "Обновление бронирования",
             description = "Обновление бронирования"
     )
     public ResponseEntity<?> updateBooking(@Valid @RequestBody BookingDTO bookingDTO) {
+        bookingDTO = bookingService.updateBooking(bookingDTO);
+        return new ResponseEntity(new ApiResponse(true, "Booking updated Successfully", bookingDTO), HttpStatus.OK);
+    }
+
+    @PostMapping("/execute")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Закрытие бронирование бронирования",
+            description = "Обновление бронирования"
+    )
+    public ResponseEntity<?> executeBooking(@Valid @RequestBody BookingDTO bookingDTO) {
         bookingDTO = bookingService.updateBooking(bookingDTO);
         return new ResponseEntity(new ApiResponse(true, "Booking updated Successfully", bookingDTO), HttpStatus.OK);
     }

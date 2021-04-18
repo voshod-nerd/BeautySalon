@@ -16,5 +16,6 @@ insert into consume_material(service_item_id,material_id,quantity) values (1,1,4
 insert into consume_material(service_item_id,material_id,quantity) values (1,2,6);
 insert into consume_material(service_item_id,material_id,quantity) values (2,1,5);
 insert into consume_material(service_item_id,material_id,quantity) values (2,2,7);
+insert into cashier (id,total_sum) values ('81c2ca82-a086-11eb-bcbc-0242ac130002',0);
 
 

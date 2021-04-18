@@ -1,6 +1,7 @@
 package com.voshodnerd.BeatySalon.model.dto;
 
 import com.voshodnerd.BeatySalon.model.ServiceItem;
+import com.voshodnerd.BeatySalon.model.StatusBooking;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -21,9 +22,11 @@ public class BookingDTO {
     @NotNull
     UserDTO user;
     @NotNull
-    Set<ServiceItem> serviceList=new HashSet<>();
+    Set<ServiceItem> serviceList = new HashSet<>();
     @NotNull
     Date date;
-    Integer sum;
-    Integer totalSum;
+    Float sum;
+    Float totalSum;
+    String promoCode;
+    StatusBooking statusBooking;
 }

@@ -14,5 +14,5 @@ import java.util.UUID;
 public class Cashier {
     @Id
     UUID id;
-    Long totalSum;
+    Float totalSum;
 }
