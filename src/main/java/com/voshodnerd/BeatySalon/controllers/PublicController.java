@@ -11,15 +11,22 @@ import com.voshodnerd.BeatySalon.model.dto.BookingDTO;
 import com.voshodnerd.BeatySalon.payload.ApiResponse;
 import com.voshodnerd.BeatySalon.service.BookingService;
 import com.voshodnerd.BeatySalon.service.ManageService;
+import com.voshodnerd.BeatySalon.utils.FileUploadUtil;
+import com.voshodnerd.BeatySalon.utils.MessageConstant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,5 +79,19 @@ public class PublicController {
         return discountRepository.findByType(TypeDiscount.PROMOCOD);
     }
 
+
+
+    @PostMapping("/upload")
+    public ApiResponse  savePicture(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String fileName = UUID.randomUUID().toString()+".jpg";
+        String userDirectory = FileSystems.getDefault()
+                .getPath("")
+                .toAbsolutePath()
+                .toString();
+        String uploadDir = "/static/images";
+        if (FileUploadUtil.saveFile(userDirectory+"/"+uploadDir, fileName, multipartFile))
+            return new ApiResponse(true, MessageConstant.PICTURE_SAVE_SUCC,userDirectory+"/"+uploadDir+"/"+fileName);
+        else return new ApiResponse(false,MessageConstant.PICTURE_SAVE_ERROR);
+    }
 
 }

@@ -20,7 +20,8 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     Users users;
-    Date date;
+    Date dateB;
+    Date dateE;
     Float sum;
     Float totalSum;
     @ManyToOne

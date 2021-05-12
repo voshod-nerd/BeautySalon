@@ -8,7 +8,9 @@ import javax.annotation.processing.Generated;
 @Getter
 @Setter
 public class JwtAuthenticationResponse {
+    private String id;
     private String username;
+    private String name;
     private String role;
     private String accessToken;
     private String tokenType = "Bearer";

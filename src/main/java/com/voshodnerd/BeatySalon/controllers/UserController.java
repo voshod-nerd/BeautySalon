@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,19 +18,31 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Контроллер пользователей", description = "Методы по работе с пользователями")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserRepository userRepository;
 
-    @GetMapping("api/public/users")
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Users> getAllUserList() {
         List<Users> result = userRepository.findAll().stream()
+                        .filter(x -> x.getActive())
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    @GetMapping("/byUserId/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Users> getByUserId(@PathVariable(name = "userId") Long userId ) {
+        List<Users> result = userRepository.findById(userId).stream()
                 .filter(x -> x.getRole().equals(RoleName.ROLE_USER)).
                         filter(x -> x.getActive())
                 .collect(Collectors.toList());
         return result;
     }
 
-    @PutMapping("/api/user/update")
+
+    @PutMapping("/update")
     public ResponseEntity<Users> updateUser(@Valid @RequestBody Users user) {
         user = userRepository.save(user);
         return ResponseEntity.ok().body(user);

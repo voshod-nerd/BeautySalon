@@ -57,8 +57,10 @@ public class AuthController {
         Optional<Users> optional = userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail());
         JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
         if (optional.isPresent()) {
+            response.setId(optional.get().getId().toString());
             response.setRole(optional.get().getRole().name());
             response.setUsername(optional.get().getUsername());
+            response.setName(optional.get().getName());
         }
         return ResponseEntity.ok(response);
     }

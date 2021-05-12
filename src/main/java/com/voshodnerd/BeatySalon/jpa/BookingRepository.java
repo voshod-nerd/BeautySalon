@@ -12,5 +12,7 @@ import java.util.Optional;
 
 public interface BookingRepository  extends JpaRepository<Booking,Long> {
     Optional<List<Booking>> findByMaster(Users master);
-    Optional<List<Booking>> findByDateBetweenAndMaster(DateTime start, DateTime end, Users master);
+    Optional<List<Booking>> findByUsers(Users users);
+    Optional<List<Booking>> findByDateBBetweenAndMaster(Date start, Date end, Users master);
+    Optional<List<Booking>> findByDateBBetween(Date b,Date e);
 }

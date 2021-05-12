@@ -47,6 +47,10 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private RoleName role;
 
+    @Column(nullable = true, length = 64)
+    private String photoSrc;
+    private String description;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "skills",
             joinColumns = @JoinColumn(name = "master_id"),

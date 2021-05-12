@@ -10,10 +10,12 @@ import com.voshodnerd.BeatySalon.payload.ApiResponse;
 import com.voshodnerd.BeatySalon.utils.MessageConstant;
 import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +36,8 @@ public class BookingService {
     public BookingDTO toBookingDTO(Booking booking) {
         BookingDTO bookingDTO = new BookingDTO();
         bookingDTO.setId(booking.getId());
-        bookingDTO.setDate(booking.getDate());
+        bookingDTO.setDateE(booking.getDateB());
+        bookingDTO.setDateE(booking.getDateE());
         bookingDTO.setSum(booking.getSum());
         bookingDTO.setTotalSum(booking.getTotalSum());
         bookingDTO.setUser(new UserDTO(booking.getUsers().getId(), booking.getUsers().getName(), booking.getUsers().getEmail()));
@@ -46,23 +49,94 @@ public class BookingService {
         Booking booking = new Booking();
         Optional<Users> optionalMaster = userRepository.findById(bookingDTO.getMaster().getId());
         Optional<Users> optionalUsers = userRepository.findById(bookingDTO.getUser().getId());
-        booking.setDate(bookingDTO.getDate());
+        booking.setDateB(bookingDTO.getDateB());
+        int duration = bookingDTO.getServiceList().stream().map(x -> x.getDurationInMinute()).reduce(0, Integer::sum);
+        booking.setDateE(new Date(bookingDTO.getDateB().getTime() + (long) 60000 * duration));
         booking.setMaster(optionalMaster.get());
         booking.setUsers(optionalUsers.get());
         booking.setStatus(StatusBooking.NEW);
-        booking.getServiceList().addAll(booking.getServiceList());
+        booking.setServiceList(bookingDTO.getServiceList());
         float sumAllServices = bookingDTO.getServiceList().stream().mapToInt(x -> x.getPrice()).sum();
         booking.setSum(sumAllServices);
         // применение скидки
-        Optional<List<Discount>> optionalDiscounts = discountRepository.findByPeriodAndUser(bookingDTO.getDate(), optionalUsers.get().getId());
-        if (optionalDiscounts.isPresent()) {
+        Optional<List<Discount>> optionalDiscounts = discountRepository.findByPeriodAndUser(bookingDTO.getDateB(), bookingDTO.getDateB(), optionalUsers.get());
+        if (optionalDiscounts.isPresent() && optionalDiscounts.get().size() > 0) {
             Discount discount = optionalDiscounts.get().get(0);
             int sizeDiscount = Math.round(((float) discount.getValue() / (float) sumAllServices) * 100);
             booking.setTotalSum(sumAllServices - sizeDiscount);
         } else {
             booking.setTotalSum(sumAllServices);
         }
-        return new Booking();
+        return booking;
+    }
+
+    public List<BookingDTO> getByDate(LocalDate date) {
+        List<BookingDTO> bookingDTOS = new ArrayList<>();
+        Optional<List<Booking>> optionalBookings = repository.findByDateBBetween(date.toDate(), date.plusDays(1).toDate());
+        if (!optionalBookings.isPresent()) return bookingDTOS;
+        for (Booking x : optionalBookings.get()) {
+            if (x.getStatus().equals(StatusBooking.PAYED)) continue;
+            BookingDTO bookingDTO = new BookingDTO();
+            bookingDTO.setId(x.getId());
+            bookingDTO.setDateB(x.getDateB());
+            bookingDTO.setDateE(x.getDateE());
+            bookingDTO.setSum(x.getSum());
+            bookingDTO.setTotalSum(x.getTotalSum());
+            Users user = userRepository.findById(x.getUsers().getId()).get();
+            bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
+            Users master = userRepository.findById(x.getMaster().getId()).get();
+            bookingDTO.setMaster(new MasterDTO(master.getId(), master.getName()));
+            bookingDTO.setServiceList(x.getServiceList());
+            bookingDTOS.add(bookingDTO);
+        }
+        return bookingDTOS;
+    }
+
+    public List<BookingDTO> getAllBooking() {
+        List<BookingDTO> bookingDTOS = new ArrayList<>();
+        Optional<List<Booking>> optionalBookings = Optional.of(repository.findAll());
+        if (!optionalBookings.isPresent()) return bookingDTOS;
+        for (Booking x : optionalBookings.get()) {
+            if (x.getStatus().equals(StatusBooking.PAYED)) continue;
+            BookingDTO bookingDTO = new BookingDTO();
+            bookingDTO.setId(x.getId());
+            bookingDTO.setDateB(x.getDateB());
+            bookingDTO.setDateE(x.getDateE());
+            bookingDTO.setSum(x.getSum());
+            bookingDTO.setTotalSum(x.getTotalSum());
+            Users user = userRepository.findById(x.getUsers().getId()).get();
+            bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
+            Users master = userRepository.findById(x.getMaster().getId()).get();
+            bookingDTO.setMaster(new MasterDTO(master.getId(), master.getName()));
+            bookingDTO.setServiceList(x.getServiceList());
+            bookingDTOS.add(bookingDTO);
+        }
+        return bookingDTOS;
+
+    }
+
+    public List<BookingDTO> getBookingByUserId(Long userId) {
+        List<BookingDTO> bookingDTOS = new ArrayList<>();
+        Optional<Users> optionalUsers = userRepository.findById(userId);
+        if (!optionalUsers.isPresent()) return bookingDTOS;
+        Optional<List<Booking>> optionalBookings = repository.findByUsers(optionalUsers.get());
+        if (!optionalBookings.isPresent()) return bookingDTOS;
+
+        for (Booking x : optionalBookings.get()) {
+            BookingDTO bookingDTO = new BookingDTO();
+            bookingDTO.setId(x.getId());
+            bookingDTO.setDateB(x.getDateB());
+            bookingDTO.setDateE(x.getDateE());
+            bookingDTO.setSum(x.getSum());
+            bookingDTO.setTotalSum(x.getTotalSum());
+            Users user = userRepository.findById(x.getUsers().getId()).get();
+            bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
+            Users master = userRepository.findById(x.getMaster().getId()).get();
+            bookingDTO.setMaster(new MasterDTO(master.getId(), master.getName()));
+            bookingDTO.setServiceList(x.getServiceList());
+            bookingDTOS.add(bookingDTO);
+        }
+        return bookingDTOS;
     }
 
     public List<BookingDTO> getBookingByMasterId(Long masterId) {
@@ -75,7 +149,8 @@ public class BookingService {
         for (Booking x : optionalBookings.get()) {
             BookingDTO bookingDTO = new BookingDTO();
             bookingDTO.setId(x.getId());
-            bookingDTO.setDate(x.getDate());
+            bookingDTO.setDateB(x.getDateB());
+            bookingDTO.setDateE(x.getDateE());
             bookingDTO.setSum(x.getSum());
             bookingDTO.setTotalSum(x.getTotalSum());
             Users user = userRepository.findById(x.getUsers().getId()).get();
@@ -93,7 +168,7 @@ public class BookingService {
     }
 
     public ApiResponse bookingValidation(BookingDTO bookingDTO) {
-        DateTime bookingTime = new DateTime(bookingDTO.getDate());
+        DateTime bookingTime = new DateTime(bookingDTO.getDateB());
         DateTime start = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth(), 0, 0);
         DateTime end = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth() + 1, 0, 0);
         Optional<Users> optionalMaster = userRepository.findById(bookingDTO.getMaster().getId());
@@ -112,13 +187,13 @@ public class BookingService {
         if (endTimeBooking.getHourOfDay() > endHour)
             return new ApiResponse(false, MessageConstant.BOOKING_TIME_IS_LONG);
 
-        Optional<List<Booking>> optionalBookings = repository.findByDateBetweenAndMaster(start, end, optionalMaster.get());
+        Optional<List<Booking>> optionalBookings = repository.findByDateBBetweenAndMaster(start.toDate(), end.toDate(), optionalMaster.get());
         if (!optionalBookings.isPresent())
             return new ApiResponse(true, MessageConstant.BOOKING_IS_PERMITTED, createBooking(bookingDTO));
 
         DateTime startTimeBooking = bookingTime;
         for (Booking item : optionalBookings.get()) {
-            DateTime startTime = new DateTime(item.getDate());
+            DateTime startTime = new DateTime(item.getDateB());
             DateTime endTime = startTime.plusMinutes(item.getServiceList().stream().mapToInt(x -> x.getDurationInMinute()).sum());
             // b.start <= b.end AND a.end >= b.start condition intersects
             if (startTime.isBefore(endTimeBooking) && endTime.isAfter(startTimeBooking)) {

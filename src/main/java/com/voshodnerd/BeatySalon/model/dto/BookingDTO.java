@@ -24,7 +24,8 @@ public class BookingDTO {
     @NotNull
     Set<ServiceItem> serviceList = new HashSet<>();
     @NotNull
-    Date date;
+    Date dateB;
+    Date dateE;
     Float sum;
     Float totalSum;
     String promoCode;
