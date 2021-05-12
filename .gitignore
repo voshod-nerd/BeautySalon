@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+# dependencies
+beauty-salon/node_modules
+beauty-salon/.pnp
+beauty-salon/.pnp.js
 
 ### STS ###
 .apt_generated
