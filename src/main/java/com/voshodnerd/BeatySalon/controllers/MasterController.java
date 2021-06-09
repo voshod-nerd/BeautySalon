@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,6 +26,7 @@ public class MasterController {
             summary = "Обновление мастера",
             description = "Обновление мастера"
     )
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Users> updateMaster(@Valid @RequestBody Users user) {
         user = userRepository.save(user);
         return ResponseEntity.ok().body(user);

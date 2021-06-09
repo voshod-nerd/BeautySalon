@@ -23,5 +23,11 @@ public class Discount {
     Users users;
     @Enumerated(EnumType.STRING)
     TypeDiscount type;
+    @Column(columnDefinition = "TEXT")
+    String description;
     Integer value;
+
+    public Long getId() {
+        return this.id;
+    }
 }

@@ -21,5 +21,6 @@ public class ServiceItemDTO {
     Integer durationInMinute;
     String category;
     Boolean active;
+    String description;
     Set<ConsumeMaterialDTO> materialList;
 }

@@ -29,6 +29,7 @@ public class Booking {
     Users master;
     @ManyToMany
     Set<ServiceItem> serviceList;
+    Integer rate;
     @Enumerated(EnumType.STRING)
     StatusBooking status;
 }

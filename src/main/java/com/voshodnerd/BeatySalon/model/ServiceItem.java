@@ -19,6 +19,7 @@ public class ServiceItem {
     Integer durationInMinute;
     String category;
     Boolean active;
+    @Column(columnDefinition="TEXT")
     String description;
     @OneToMany(mappedBy="serviceItem", fetch=FetchType.EAGER,cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore

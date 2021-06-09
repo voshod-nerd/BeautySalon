@@ -72,7 +72,7 @@ public class BookingController {
 
 
     @PutMapping("/update")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @Operation(
             summary = "Обновление бронирования",
             description = "Обновление бронирования"

@@ -79,6 +79,7 @@ public class BookingService {
             BookingDTO bookingDTO = new BookingDTO();
             bookingDTO.setId(x.getId());
             bookingDTO.setDateB(x.getDateB());
+            bookingDTO.setRate(x.getRate());
             bookingDTO.setDateE(x.getDateE());
             bookingDTO.setSum(x.getSum());
             bookingDTO.setTotalSum(x.getTotalSum());
@@ -102,8 +103,10 @@ public class BookingService {
             bookingDTO.setId(x.getId());
             bookingDTO.setDateB(x.getDateB());
             bookingDTO.setDateE(x.getDateE());
+            bookingDTO.setRate(x.getRate());
             bookingDTO.setSum(x.getSum());
             bookingDTO.setTotalSum(x.getTotalSum());
+            bookingDTO.setStatusBooking(x.getStatus());
             Users user = userRepository.findById(x.getUsers().getId()).get();
             bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
             Users master = userRepository.findById(x.getMaster().getId()).get();
@@ -128,6 +131,8 @@ public class BookingService {
             bookingDTO.setDateB(x.getDateB());
             bookingDTO.setDateE(x.getDateE());
             bookingDTO.setSum(x.getSum());
+            bookingDTO.setRate(x.getRate());
+            bookingDTO.setStatusBooking(x.getStatus());
             bookingDTO.setTotalSum(x.getTotalSum());
             Users user = userRepository.findById(x.getUsers().getId()).get();
             bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
@@ -164,7 +169,15 @@ public class BookingService {
     }
 
     public BookingDTO updateBooking(BookingDTO bookingDTO) {
-        return bookingDTO;
+        Optional<Booking> optional = repository.findById(bookingDTO.getId());
+        if (!optional.isPresent()) return null;
+        Booking booking = optional.get();
+        booking.setRate(bookingDTO.getRate());
+        booking.setServiceList(bookingDTO.getServiceList());
+        booking.setDateB(bookingDTO.getDateB());
+        booking.setDateE(bookingDTO.getDateE());
+        booking.setStatus(bookingDTO.getStatusBooking());
+        return toBookingDTO(repository.save(booking));
     }
 
     public ApiResponse bookingValidation(BookingDTO bookingDTO) {

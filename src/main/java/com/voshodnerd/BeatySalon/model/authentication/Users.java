@@ -49,6 +49,7 @@ public class Users {
 
     @Column(nullable = true, length = 64)
     private String photoSrc;
+    @Column(columnDefinition="TEXT")
     private String description;
 
     @ManyToMany(fetch = FetchType.LAZY)

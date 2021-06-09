@@ -29,5 +29,6 @@ public class BookingDTO {
     Float sum;
     Float totalSum;
     String promoCode;
+    Integer rate;
     StatusBooking statusBooking;
 }
