@@ -1,0 +1,10 @@
+export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_IMAGE_URL = 'http://localhost:8080/api/public/image/';
+export const ACCESS_TOKEN = 'accessToken';
+export const USER_INFO="userInfo";
+export const LOGIN_SUCC_TITLE="Вы успешно авторизовались";
+export const LOGIN_ERROR_401="Доступ запрещен. Неверный логин или пароль";
+export const LOGIN_SERVER_ERROR="Ошибка взаимодейсвия с сервером. Попробуйте позднее";
+export const ERROR_LOAD="Ошибка загрузка данных";
+export const BOOKING_ERROR="Ошибка бронирования";
+export const SIGN_UP_SUCCESS="Регистрация прошла успешна";

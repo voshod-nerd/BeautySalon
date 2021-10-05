@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class TransactionController {
     private final CashierRepository cashierRepository;
 
     @Value("${uuid.cashier}")
-    private  String cashier;
+    private String cashier;
 
 
     @GetMapping("/balance")
@@ -45,8 +46,20 @@ public class TransactionController {
         Optional<Cashier> optional = cashierRepository.findById(UUID.fromString(cashier));
         if (!optional.isPresent())
             return new ResponseEntity(new ApiResponse(false, MessageConstant.NOT_FOUND_CASHIER), HttpStatus.OK);
-        return new ResponseEntity<>(new ApiResponse(true, MessageConstant.MONEY_BALANCE), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, MessageConstant.MONEY_BALANCE,optional.get()), HttpStatus.OK);
     }
+
+    @GetMapping("/operation_list")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Все транзакции",
+            description = "Все транзакции"
+    )
+    public ResponseEntity<?> listTransaction() {
+        List<TransactionElement> list = transactionRepository.findAll();
+        return new ResponseEntity(list, HttpStatus.OK);
+    }
+
 
     @PostMapping("/perform")
     @PreAuthorize("hasRole('ADMIN')")
@@ -55,6 +68,7 @@ public class TransactionController {
             description = "INCOME- добавление OUTCOME - выдача наличных"
     )
     public ResponseEntity<?> doTransaction(@Valid @RequestBody TransactionElement element) {
+        element.setTime(new Date());
         element = transactionRepository.save(element);
         Optional<Cashier> optional = cashierRepository.findById(UUID.fromString(cashier));
         if (!optional.isPresent())

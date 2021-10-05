@@ -1,31 +1,47 @@
 package com.voshodnerd.BeatySalon.controllers;
 
+import com.voshodnerd.BeatySalon.jpa.ConsumptionMaterialRepository;
 import com.voshodnerd.BeatySalon.jpa.MaterialRepository;
+import com.voshodnerd.BeatySalon.jpa.ServiceItemRepository;
+import com.voshodnerd.BeatySalon.model.ConsumeMaterial;
 import com.voshodnerd.BeatySalon.model.Discount;
 import com.voshodnerd.BeatySalon.model.Material;
+import com.voshodnerd.BeatySalon.model.ServiceItem;
 import com.voshodnerd.BeatySalon.model.authentication.Users;
+import com.voshodnerd.BeatySalon.model.dto.ConsumeMaterialDTO;
 import com.voshodnerd.BeatySalon.model.dto.OperationMaterial;
+import com.voshodnerd.BeatySalon.model.dto.ServiceItemDTO;
 import com.voshodnerd.BeatySalon.payload.ApiResponse;
+import com.voshodnerd.BeatySalon.service.ManageService;
 import com.voshodnerd.BeatySalon.utils.MessageConstant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/material")
 @Tag(name = "Контроллер по работе с материалами", description = "Методы по учету материалов")
 public class MaterialController {
     private final MaterialRepository materialRepository;
-
+    private final ServiceItemRepository serviceItemRepository;
+    private final ConsumptionMaterialRepository consumptionMaterialRepository;
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
@@ -37,6 +53,7 @@ public class MaterialController {
         List<Material> materialList = materialRepository.findAll();
         return materialList;
     }
+
 
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
@@ -98,5 +115,8 @@ public class MaterialController {
         material = materialRepository.save(material);
         return ResponseEntity.ok().body(material);
     }
+
+
+
 
 }

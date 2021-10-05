@@ -83,6 +83,7 @@ public class BookingService {
             bookingDTO.setDateE(x.getDateE());
             bookingDTO.setSum(x.getSum());
             bookingDTO.setTotalSum(x.getTotalSum());
+            bookingDTO.setStatusBooking(x.getStatus());
             Users user = userRepository.findById(x.getUsers().getId()).get();
             bookingDTO.setUser(new UserDTO(user.getId(), user.getName(), user.getEmail()));
             Users master = userRepository.findById(x.getMaster().getId()).get();
@@ -98,7 +99,7 @@ public class BookingService {
         Optional<List<Booking>> optionalBookings = Optional.of(repository.findAll());
         if (!optionalBookings.isPresent()) return bookingDTOS;
         for (Booking x : optionalBookings.get()) {
-            if (x.getStatus().equals(StatusBooking.PAYED)) continue;
+            //if (x.getStatus().equals(StatusBooking)) continue;
             BookingDTO bookingDTO = new BookingDTO();
             bookingDTO.setId(x.getId());
             bookingDTO.setDateB(x.getDateB());
@@ -177,13 +178,20 @@ public class BookingService {
         booking.setDateB(bookingDTO.getDateB());
         booking.setDateE(bookingDTO.getDateE());
         booking.setStatus(bookingDTO.getStatusBooking());
+        booking.setSum(bookingDTO.getSum());
+        booking.setTotalSum(bookingDTO.getTotalSum());
+
+        if (booking.getStatus().equals(StatusBooking.DONE)) {
+
+        }
+
         return toBookingDTO(repository.save(booking));
     }
 
     public ApiResponse bookingValidation(BookingDTO bookingDTO) {
         DateTime bookingTime = new DateTime(bookingDTO.getDateB());
         DateTime start = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth(), 0, 0);
-        DateTime end = new DateTime(bookingTime.getYear(), bookingTime.getMonthOfYear(), bookingTime.getDayOfMonth() + 1, 0, 0);
+        DateTime end = bookingTime.plusDays(1);
         Optional<Users> optionalMaster = userRepository.findById(bookingDTO.getMaster().getId());
         Optional<Users> optionalUsers = userRepository.findById(bookingDTO.getUser().getId());
         if (!optionalMaster.isPresent()) return new ApiResponse(false, MessageConstant.NO_MASTER);
@@ -195,7 +203,6 @@ public class BookingService {
         if (bookingTime.hourOfDay().get() > endHour)
             return new ApiResponse(false, MessageConstant.LATE_FINISH_WORK_DAY);
         int totalTimeWork = bookingDTO.getServiceList().stream().mapToInt(x -> x.getDurationInMinute()).sum();
-
         DateTime endTimeBooking = bookingTime.plusMinutes(totalTimeWork);
         if (endTimeBooking.getHourOfDay() > endHour)
             return new ApiResponse(false, MessageConstant.BOOKING_TIME_IS_LONG);

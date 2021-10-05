@@ -21,7 +21,7 @@ public class ServiceItem {
     Boolean active;
     @Column(columnDefinition="TEXT")
     String description;
-    @OneToMany(mappedBy="serviceItem", fetch=FetchType.EAGER,cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy="serviceItem", fetch=FetchType.EAGER,cascade = CascadeType.REMOVE,orphanRemoval = true)
     @JsonIgnore
     List<ConsumeMaterial> materialList;
 

@@ -55,6 +55,7 @@ public class ServiceController {
         return new ResponseEntity(new ApiResponse(true, "Service created Successfully", service), HttpStatus.OK);
     }
 
+
     @GetMapping("/all_with_consume_material")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(
@@ -105,7 +106,7 @@ public class ServiceController {
         context.getDestination().setName(context.getSource().getName());
         context.getDestination().setPrice(context.getSource().getPrice());
         for (ConsumeMaterial material : context.getSource().getMaterialList()) {
-            context.getDestination().getMaterialList().add(new ConsumeMaterialDTO(material.getMaterial().getId(), material.getMaterial().getName(), material.getQuantity().intValue()));
+            context.getDestination().getMaterialList().add(new ConsumeMaterialDTO(material.getId(), material.getMaterial().getId(),material.getServiceItem().getId(), material.getMaterial().getName(), material.getQuantity().intValue()));
         }
         return context.getDestination();
     };

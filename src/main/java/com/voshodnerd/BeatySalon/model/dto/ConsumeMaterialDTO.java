@@ -7,7 +7,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConsumeMaterialDTO {
+    Long id;
     Long idMaterial;
+    Long serviceId;
     String name;
     Integer quantity;
 }

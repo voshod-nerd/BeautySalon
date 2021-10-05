@@ -42,6 +42,7 @@ public class Users {
     @NotBlank
     @Size(max = 100)
     @JsonIgnore
+    @Column(nullable = false,updatable= false)
     private String password;
     private Boolean active;
     @Enumerated(EnumType.STRING)
