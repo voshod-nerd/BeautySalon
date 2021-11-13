@@ -5,8 +5,7 @@ target/
 !**/src/test/**/target/
 # dependencies
 /front/node_modules
-!/front/.pnp
-!/front/.pnp.js
+/devops/db
 
 ### STS ###
 .apt_generated

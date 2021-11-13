@@ -1,12 +1,29 @@
-# Stage 0, "build-stage", based on Node.js, to build and compile the frontend
-FROM tiangolo/node-frontend:10 as build-stage
+#### Stage 1: Build the react application
+FROM node:14.16.1-alpine as build
+# Configure the main working directory inside the docker image.
+# This is the base directory used in any further RUN, COPY, and ENTRYPOINT
+# commands.
 WORKDIR /app
+# Copy the package.json as well as the package-lock.json and install
+# the dependencies. This is a separate step so the dependencies
+# will be cached unless changes to one of those two files
+# are made.
 COPY package*.json /app/
 RUN npm install
-COPY ./ /app/
+# Copy the main application
+COPY . ./
+# Arguments
+ARG REACT_APP_API_BASE_URL
+ENV REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
+# Build the application
 RUN npm run build
-# Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
-FROM nginx:1.15
-COPY --from=build-stage /app/build/ /usr/share/nginx/html
-# Copy the default nginx.conf provided by tiangolo/node-frontend
-COPY --from=build-stage /nginx.conf /etc/nginx/conf.d/default.conf
+#### Stage 2: Serve the React application from Nginx
+FROM nginx:1.17.0-alpine
+# Copy the react build from Stage 1
+COPY --from=build /app/build /var/www
+# Copy our custom nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+# Expose port 80 to the Docker host, so we can access it
+# from the outside.
+EXPOSE 80
+ENTRYPOINT ["nginx","-g","daemon off;"]
