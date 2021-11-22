@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public class TransactionController {
         Optional<Cashier> optional = cashierRepository.findById(UUID.fromString(cashier));
         if (!optional.isPresent())
             return new ResponseEntity(new ApiResponse(false, MessageConstant.NOT_FOUND_CASHIER), HttpStatus.OK);
-        return new ResponseEntity<>(new ApiResponse(true, MessageConstant.MONEY_BALANCE,optional.get()), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse(true, MessageConstant.MONEY_BALANCE, optional.get()), HttpStatus.OK);
     }
 
     @GetMapping("/operation_list")
@@ -76,11 +77,11 @@ public class TransactionController {
 
         Cashier cashier = optional.get();
         if (element.getOperation().equals(OperationType.INCOME)) {
-            cashier.setTotalSum(cashier.getTotalSum() + element.getSum());
+            cashier.setTotalSum(cashier.getTotalSum().add(element.getSum()));
         }
         if (element.getOperation().equals(OperationType.OUTCOME)) {
-            cashier.setTotalSum(cashier.getTotalSum() - element.getSum());
-            if (cashier.getTotalSum() < 0)
+            cashier.setTotalSum(cashier.getTotalSum().subtract(element.getSum()));
+            if (cashier.getTotalSum().compareTo(new BigDecimal(0l)) > 0)
                 return new ResponseEntity(new ApiResponse(false, MessageConstant.CASHIER_LESS_ZERO), HttpStatus.OK);
         }
         cashier = cashierRepository.save(cashier);

@@ -25,7 +25,7 @@ public class Discount {
     TypeDiscount type;
     @Column(columnDefinition = "TEXT")
     String description;
-    Integer value;
+    Long value;
 
     public Long getId() {
         return this.id;

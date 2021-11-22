@@ -121,7 +121,7 @@ public class PublicController {
                 .toAbsolutePath()
                 .toString();
         if (FileUploadUtil.saveFile(userDirectory + "/" + uploadDir, fileName, multipartFile))
-            return new ApiResponse(true, MessageConstant.PICTURE_SAVE_SUCC, fileName);
+            return new ApiResponse(true, MessageConstant.PICTURE_SAVE_SUCCESSFULLY, fileName);
         else return new ApiResponse(false, MessageConstant.PICTURE_SAVE_ERROR);
     }
 

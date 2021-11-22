@@ -7,10 +7,12 @@ import com.voshodnerd.BeatySalon.jpa.TransactionRepository;
 import com.voshodnerd.BeatySalon.model.*;
 import com.voshodnerd.BeatySalon.model.dto.BookingDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Component
@@ -21,6 +23,7 @@ public class CashierService {
     private final BookingRepository bookingRepository;
     private final MaterialRepository materialRepository;
     @Value("${uuid.cashier}")
+    @Setter
     private String cashierId;
 
     @Transactional
@@ -32,7 +35,7 @@ public class CashierService {
         transaction.setTime(new Date());
         transaction.setDescription("Оплата за запись № " + bookingDTO.getId() + " : Исполнитель мастер  " + bookingDTO.getMaster().getName());
         transaction = transactionRepository.save(transaction);
-        cashier.setTotalSum(cashier.getTotalSum() + transaction.getSum());
+        cashier.setTotalSum(cashier.getTotalSum().add(transaction.getSum()));
         repository.save(cashier);
     }
 
@@ -59,8 +62,8 @@ public class CashierService {
     public void setBookingDone(List<Booking> list) {
         Cashier cashier = repository.findById(UUID.fromString(cashierId)).orElseThrow();
 
-        float totalSumWork = list.stream().map(x -> x.getTotalSum()).reduce((float) 0, Float::sum);
-        float sumForMaster = Math.round(0.6 * totalSumWork);
+        BigDecimal totalSumWork = list.stream().map(x -> x.getTotalSum()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal sumForMaster = totalSumWork.multiply(new BigDecimal(0.7));
         for (Booking booking : list) {
             booking.setStatus(StatusBooking.DONE);
             bookingRepository.save(booking);
@@ -71,7 +74,7 @@ public class CashierService {
         transaction.setTime(new Date());
         transaction.setDescription("Выплаты заработной платы " + " : Исполнитель мастер  " + list.get(0).getMaster().getName());
         transaction = transactionRepository.save(transaction);
-        cashier.setTotalSum(cashier.getTotalSum() + transaction.getSum());
+        cashier.setTotalSum(cashier.getTotalSum().subtract(transaction.getSum()));
         repository.save(cashier);
     }
 }

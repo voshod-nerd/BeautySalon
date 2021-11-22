@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.*;
 
@@ -26,8 +27,8 @@ public class BookingDTO {
     @NotNull
     Date dateB;
     Date dateE;
-    Float sum;
-    Float totalSum;
+    BigDecimal sum;
+    BigDecimal totalSum;
     String promoCode;
     Integer rate;
     StatusBooking statusBooking;

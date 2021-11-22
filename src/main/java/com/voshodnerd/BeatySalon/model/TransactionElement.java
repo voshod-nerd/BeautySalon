@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -16,7 +17,7 @@ public class TransactionElement {
     Long id;
     @Enumerated(EnumType.STRING)
     OperationType operation;
-    Float sum;
+    BigDecimal sum;
     Date time;
     String description;
 }

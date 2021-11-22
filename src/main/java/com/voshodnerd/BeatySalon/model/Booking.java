@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -22,8 +23,8 @@ public class Booking {
     Users users;
     Date dateB;
     Date dateE;
-    Float sum;
-    Float totalSum;
+    BigDecimal sum;
+    BigDecimal totalSum;
     @ManyToOne
     @JoinColumn(name = "master_id", nullable = false)
     Users master;

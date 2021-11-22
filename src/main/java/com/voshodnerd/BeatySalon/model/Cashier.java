@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -14,5 +15,5 @@ import java.util.UUID;
 public class Cashier {
     @Id
     UUID id;
-    Float totalSum;
+    BigDecimal totalSum;
 }

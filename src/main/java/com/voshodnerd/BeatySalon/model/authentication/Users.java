@@ -2,10 +2,7 @@ package com.voshodnerd.BeatySalon.model.authentication;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.voshodnerd.BeatySalon.model.ServiceItem;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

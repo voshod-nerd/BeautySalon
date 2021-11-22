@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -15,7 +16,7 @@ public class ServiceItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
-    Integer price;
+    BigDecimal price;
     Integer durationInMinute;
     String category;
     Boolean active;

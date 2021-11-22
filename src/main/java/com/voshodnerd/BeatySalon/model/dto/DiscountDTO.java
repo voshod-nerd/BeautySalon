@@ -22,5 +22,5 @@ public class DiscountDTO {
     Long users;
     TypeDiscount type;
     String description;
-    Integer value;
+    Long value;
 }

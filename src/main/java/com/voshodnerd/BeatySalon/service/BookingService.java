@@ -14,6 +14,7 @@ import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,14 +57,14 @@ public class BookingService {
         booking.setUsers(optionalUsers.get());
         booking.setStatus(StatusBooking.NEW);
         booking.setServiceList(bookingDTO.getServiceList());
-        float sumAllServices = bookingDTO.getServiceList().stream().mapToInt(x -> x.getPrice()).sum();
+        BigDecimal sumAllServices = bookingDTO.getServiceList().stream().map(x -> x.getPrice()).reduce(BigDecimal.ZERO, BigDecimal::add);
         booking.setSum(sumAllServices);
         // применение скидки
         Optional<List<Discount>> optionalDiscounts = discountRepository.findByPeriodAndUser(bookingDTO.getDateB(), bookingDTO.getDateB(), optionalUsers.get());
         if (optionalDiscounts.isPresent() && optionalDiscounts.get().size() > 0) {
             Discount discount = optionalDiscounts.get().get(0);
-            int sizeDiscount = Math.round(((float) discount.getValue() / (float) sumAllServices) * 100);
-            booking.setTotalSum(sumAllServices - sizeDiscount);
+            BigDecimal sizeDiscount = BigDecimal.valueOf(discount.getValue()).divide(sumAllServices).multiply(new BigDecimal(100l));
+            booking.setTotalSum(sumAllServices.subtract(sizeDiscount));
         } else {
             booking.setTotalSum(sumAllServices);
         }
@@ -244,7 +245,7 @@ public class BookingService {
         if (!optionalCashier.isPresent()) return new ApiResponse(false, MessageConstant.NOT_FOUND_CASHIER);
         Cashier cashier = optionalCashier.get();
         transaction = transactionRepository.save(transaction);
-        cashier.setTotalSum(cashier.getTotalSum() + transaction.getSum());
+        cashier.setTotalSum(cashier.getTotalSum().add(transaction.getSum()));
         cashierRepository.save(cashier);
         repository.save(booking);
         return new ApiResponse(true, MessageConstant.BOOKING_IS_EXECUTED, bookingDTO);
@@ -255,8 +256,8 @@ public class BookingService {
         List<Discount> discounts = discountRepository.findByType(TypeDiscount.valueOf(bookingDTO.getPromoCode()));
         if (discounts == null) return;
         Discount discount = discounts.get(0);
-        float totalsum = booking.getTotalSum();
-        totalsum = totalsum - totalsum / 100 * discount.getValue();
+        BigDecimal totalsum = booking.getTotalSum();
+        totalsum = totalsum.subtract(totalsum.divide(new BigDecimal(100l)).multiply(new BigDecimal(discount.getValue())));
         bookingDTO.setTotalSum(totalsum);
         booking.setTotalSum(totalsum);
     }

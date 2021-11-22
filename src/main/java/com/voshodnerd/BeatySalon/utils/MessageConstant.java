@@ -27,6 +27,6 @@ public abstract class MessageConstant {
     public static final String CASHIER_LESS_ZERO = "Нельзя выполнить операцию  снятия денег. Денег меньше 0";
     public static final String TRANSACTION_MONEY_PERFORMED = "Транзакция с кассой выполнена";
     public static final String MONEY_BALANCE = "Информация о балансе кассы";
-    public static final String PICTURE_SAVE_SUCC = "Картина сохранена успешно";
+    public static final String PICTURE_SAVE_SUCCESSFULLY = "Картина сохранена успешно";
     public static final String PICTURE_SAVE_ERROR = "Изображение не удалось сохранить";
 }
